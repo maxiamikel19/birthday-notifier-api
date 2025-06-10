@@ -7,7 +7,9 @@ import com.maxiamikel.BirthdayNotifierAPI.enums.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
+@Data
 public class UserRequestDto {
     @NotBlank(message = "The name is required")
     private String name;

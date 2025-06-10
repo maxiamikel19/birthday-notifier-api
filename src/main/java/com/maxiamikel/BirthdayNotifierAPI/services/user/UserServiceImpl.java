@@ -3,51 +3,77 @@ package com.maxiamikel.BirthdayNotifierAPI.services.user;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.maxiamikel.BirthdayNotifierAPI.dtos.UserRequestDto;
 import com.maxiamikel.BirthdayNotifierAPI.dtos.UserUpdateRequestDto;
 import com.maxiamikel.BirthdayNotifierAPI.entities.User;
+import com.maxiamikel.BirthdayNotifierAPI.exceptions.DuplicateEntityException;
+import com.maxiamikel.BirthdayNotifierAPI.exceptions.ResourceNotFoundException;
+import com.maxiamikel.BirthdayNotifierAPI.repositories.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
+    @Transactional
     public User create(UserRequestDto request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+        if (userRepository.findByEmail(request.getEmail().trim()).isPresent()) {
+            throw new DuplicateEntityException("User aleready exists!");
+        }
+
+        User user = new User();
+        user.setUserId(null);
+        user.setName(request.getName().trim());
+        user.setBirthday(request.getBirthday());
+        user.setCreatedAt(LocalDate.now());
+        user.setEmail(request.getEmail().trim());
+        user.setGender(request.getGender());
+        user.setPhone(request.getPhone().trim());
+
+        return userRepository.save(user);
     }
 
     @Override
     public Page<User> findAll(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return userRepository.findAll(pageable);
     }
 
     @Override
     public User findById(String userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return getById(userId);
     }
 
     @Override
     public void delete(String userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        userRepository.deleteById(getById(userId).getUserId());
     }
 
     @Override
+    @Transactional
     public User update(String userId, UserUpdateRequestDto request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        User presentUser = getById(userId);
+        presentUser.setEmail(request.getEmail().trim());
+        presentUser.setPhone(request.getPhone().trim());
+        presentUser.setName(request.getName().trim());
+        return userRepository.save(presentUser);
     }
 
     @Override
     public List<User> findByBirthdayToday(LocalDate searchDate) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByBirthdayToday'");
+        return userRepository.findByBirthdayToday(searchDate.getMonthValue(), searchDate.getDayOfMonth());
+    }
+
+    private User getById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User ID:" + userId + " cannot be found!"));
     }
 
 }
