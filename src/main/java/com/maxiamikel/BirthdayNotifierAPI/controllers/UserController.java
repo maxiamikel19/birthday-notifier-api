@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,6 +67,14 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ApiResponse(SUCCESS_MESSAGE, HttpStatus.OK.getReasonPhrase(), userDto));
+    }
+
+    @DeleteMapping("/{userId}/delete")
+    public ResponseEntity<ApiResponse> delete(@PathVariable String userId) {
+        userService.delete(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ApiResponse(SUCCESS_MESSAGE, "Successfully deleted", null));
+
     }
 
 }
