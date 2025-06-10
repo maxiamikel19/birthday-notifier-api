@@ -2,7 +2,6 @@ package com.maxiamikel.BirthdayNotifierAPI.schelduler;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,7 +23,7 @@ public class BirthdaySchelduler {
     @Autowired
     private UserService userService;
 
-    @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(cron = "0 0 8 * * *")
     public void sendBirthdayNotification() {
         LocalDate today = LocalDate.now();
         String messageToday = "Happy birthday to you";
