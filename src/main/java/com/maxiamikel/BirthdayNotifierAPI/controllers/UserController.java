@@ -7,13 +7,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maxiamikel.BirthdayNotifierAPI.dtos.UserRequestDto;
+import com.maxiamikel.BirthdayNotifierAPI.dtos.UserUpdateRequestDto;
 import com.maxiamikel.BirthdayNotifierAPI.mapper.UserMapper;
 import com.maxiamikel.BirthdayNotifierAPI.payload.ApiResponse;
 import com.maxiamikel.BirthdayNotifierAPI.services.user.UserService;
@@ -46,6 +49,23 @@ public class UserController {
         var pageUsers = userService.findAll(pageable);
         var pageUsersDto = pageUsers.map(user -> UserMapper.mapToDto(user));
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(SUCCESS_MESSAGE, "Found", pageUsersDto));
+    }
+
+    @GetMapping("/find/{userId}")
+    public ResponseEntity<ApiResponse> findById(@PathVariable String userId) {
+        var user = userService.findById(userId);
+        var usersDto = UserMapper.mapToDto(user);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(SUCCESS_MESSAGE, "Found", usersDto));
+
+    }
+
+    @PutMapping("/{userId}/update")
+    public ResponseEntity<ApiResponse> update(@PathVariable String userId,
+            @RequestBody @Valid UserUpdateRequestDto request) {
+        var userDto = userService.update(userId, request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ApiResponse(SUCCESS_MESSAGE, HttpStatus.OK.getReasonPhrase(), userDto));
     }
 
 }
