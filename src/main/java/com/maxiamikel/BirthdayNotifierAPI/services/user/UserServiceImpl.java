@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User update(String userId, UserUpdateRequestDto request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new DataIntegrityViolationException(
+                    "Email: " + request.getEmail() + " aleready used by annother user");
+        }
         User presentUser = getById(userId);
         presentUser.setEmail(request.getEmail().trim());
         presentUser.setPhone(request.getPhone().trim());

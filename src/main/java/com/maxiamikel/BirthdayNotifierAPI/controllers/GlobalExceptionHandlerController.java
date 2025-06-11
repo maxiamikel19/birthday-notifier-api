@@ -3,6 +3,7 @@ package com.maxiamikel.BirthdayNotifierAPI.controllers;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -49,5 +50,13 @@ public class GlobalExceptionHandlerController {
                 "Fatal error! Please verify the Gender[M or F is available] value or the Date value[yyyy-MM-dd is available]");
         err.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(err);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<StandardError> dataIntegrityViolationException(DataIntegrityViolationException e) {
+        StandardError err = new StandardError();
+        err.setMessage(e.getMessage());
+        err.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
     }
 }
