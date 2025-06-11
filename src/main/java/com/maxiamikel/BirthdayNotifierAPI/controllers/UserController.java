@@ -69,8 +69,8 @@ public class UserController {
     @ApiResponse(responseCode = "404", description = "User ID not found")
     public ResponseEntity<LocalApiResponse> findById(@PathVariable String userId) {
         var user = userService.findById(userId);
-        var usersDto = UserMapper.mapToDto(user);
-        return ResponseEntity.status(HttpStatus.OK).body(new LocalApiResponse(SUCCESS_MESSAGE, "Found", usersDto));
+        var userDetailDto = UserMapper.mapToUserDetail(user);
+        return ResponseEntity.status(HttpStatus.OK).body(new LocalApiResponse(SUCCESS_MESSAGE, "Found", userDetailDto));
 
     }
 
