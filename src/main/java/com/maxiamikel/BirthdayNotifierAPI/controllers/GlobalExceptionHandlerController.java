@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.maxiamikel.BirthdayNotifierAPI.exceptions.DuplicateEntityException;
+import com.maxiamikel.BirthdayNotifierAPI.exceptions.NoContentFoundException;
 import com.maxiamikel.BirthdayNotifierAPI.exceptions.ResourceNotFoundException;
 import com.maxiamikel.BirthdayNotifierAPI.exceptions.StandardError;
 
@@ -66,5 +67,13 @@ public class GlobalExceptionHandlerController {
         err.setMessage(e.getMessage());
         err.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+    }
+
+    @ExceptionHandler(NoContentFoundException.class)
+    public ResponseEntity<StandardError> noContentFoundException(NoContentFoundException e) {
+        StandardError err = new StandardError();
+        err.setMessage(e.getMessage());
+        err.setStatusCode(HttpStatus.NO_CONTENT.value());
+        return ResponseEntity.status(HttpStatus.OK).body(err);
     }
 }

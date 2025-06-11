@@ -1,7 +1,6 @@
 package com.maxiamikel.BirthdayNotifierAPI.services.user;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -69,11 +68,6 @@ public class UserServiceImpl implements UserService {
         presentUser.setPhone(request.getPhone().trim());
         presentUser.setName(request.getName().trim());
         return userRepository.save(presentUser);
-    }
-
-    @Override
-    public List<User> findByBirthdayToday(LocalDate searchDate) {
-        return userRepository.findByBirthdayToday(searchDate.getMonthValue(), searchDate.getDayOfMonth());
     }
 
     private User getById(String userId) {
