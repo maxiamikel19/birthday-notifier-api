@@ -19,13 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maxiamikel.BirthdayNotifierAPI.dtos.UserRequestDto;
 import com.maxiamikel.BirthdayNotifierAPI.dtos.UserUpdateRequestDto;
 import com.maxiamikel.BirthdayNotifierAPI.mapper.UserMapper;
-import com.maxiamikel.BirthdayNotifierAPI.payload.ApiResponse;
+import com.maxiamikel.BirthdayNotifierAPI.payload.LocalApiResponse;
 import com.maxiamikel.BirthdayNotifierAPI.services.user.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "User controller", description = "Basic CRUD for user entity")
 public class UserController {
 
     @Autowired
@@ -34,46 +38,64 @@ public class UserController {
     private final String SUCCESS_MESSAGE = "SUCCESS";
 
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> create(@RequestBody @Valid UserRequestDto request) {
+    @Operation(summary = "Create a new user account")
+    @ApiResponse(responseCode = "201", description = "Successfully created")
+    @ApiResponse(responseCode = "40o", description = "Bad request, file is required")
+    @ApiResponse(responseCode = "406", description = "Fatal error! Please verify the Gender[M or F is available] value or the Date value[yyyy-MM-dd is available]\"")
+    @ApiResponse(responseCode = "409", description = "User aleready exists")
+    public ResponseEntity<LocalApiResponse> create(@RequestBody @Valid UserRequestDto request) {
 
         var userDto = UserMapper.mapToDto(userService.create(request));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new ApiResponse(SUCCESS_MESSAGE, HttpStatus.CREATED.getReasonPhrase(), userDto));
+                .body(new LocalApiResponse(SUCCESS_MESSAGE, HttpStatus.CREATED.getReasonPhrase(), userDto));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse> findAll(@RequestParam(defaultValue = "0") int page,
+    @Operation(summary = "List page(s) of registred users")
+    @ApiResponse(responseCode = "200", description = "Successfully returned page(s) of users")
+    public ResponseEntity<LocalApiResponse> findAll(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "name") String sortBy) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         var pageUsers = userService.findAll(pageable);
         var pageUsersDto = pageUsers.map(user -> UserMapper.mapToDto(user));
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(SUCCESS_MESSAGE, "Found", pageUsersDto));
+        return ResponseEntity.status(HttpStatus.OK).body(new LocalApiResponse(SUCCESS_MESSAGE, "Found", pageUsersDto));
     }
 
     @GetMapping("/find/{userId}")
-    public ResponseEntity<ApiResponse> findById(@PathVariable String userId) {
+    @Operation(summary = "Show a specific user details by id")
+    @ApiResponse(responseCode = "200", description = "User found")
+    @ApiResponse(responseCode = "404", description = "User ID not found")
+    public ResponseEntity<LocalApiResponse> findById(@PathVariable String userId) {
         var user = userService.findById(userId);
         var usersDto = UserMapper.mapToDto(user);
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(SUCCESS_MESSAGE, "Found", usersDto));
+        return ResponseEntity.status(HttpStatus.OK).body(new LocalApiResponse(SUCCESS_MESSAGE, "Found", usersDto));
 
     }
 
     @PutMapping("/{userId}/update")
-    public ResponseEntity<ApiResponse> update(@PathVariable String userId,
+    @Operation(summary = "Update a user data")
+    @ApiResponse(responseCode = "200", description = "Successfully updated")
+    @ApiResponse(responseCode = "40o", description = "Bad request, file is required")
+    @ApiResponse(responseCode = "404", description = "User ID not found")
+    @ApiResponse(responseCode = "500", description = "Email aleready used by annother user")
+    public ResponseEntity<LocalApiResponse> update(@PathVariable String userId,
             @RequestBody @Valid UserUpdateRequestDto request) {
         var userDto = userService.update(userId, request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new ApiResponse(SUCCESS_MESSAGE, HttpStatus.OK.getReasonPhrase(), userDto));
+                .body(new LocalApiResponse(SUCCESS_MESSAGE, HttpStatus.OK.getReasonPhrase(), userDto));
     }
 
     @DeleteMapping("/{userId}/delete")
-    public ResponseEntity<ApiResponse> delete(@PathVariable String userId) {
+    @Operation(summary = "To delete a user in the database")
+    @ApiResponse(responseCode = "200", description = "Successfully updated")
+    @ApiResponse(responseCode = "404", description = "User ID not found")
+    public ResponseEntity<LocalApiResponse> delete(@PathVariable String userId) {
         userService.delete(userId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new ApiResponse(SUCCESS_MESSAGE, "Successfully deleted", null));
+                .body(new LocalApiResponse(SUCCESS_MESSAGE, "Successfully deleted", null));
 
     }
 
