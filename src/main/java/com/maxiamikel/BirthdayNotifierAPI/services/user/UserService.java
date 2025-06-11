@@ -22,4 +22,5 @@ public interface UserService {
     User update(String userId, UserUpdateRequestDto request);
 
     List<User> findByBirthdayToday(LocalDate searchDate);
+
 }

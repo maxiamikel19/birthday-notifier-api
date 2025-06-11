@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u FROM User u WHERE FUNCTION('MONTH', u.birthday) = :month AND FUNCTION('DAY', u.birthday) = :day")
     List<User> findByBirthdayToday(@Param("month") int month, @Param("day") int day);
 
+    @Query("SELECT u FROM User u WHERE MONTH(u.birthday) = :presentMonth")
+    List<User> findByBirthdayMonth(@Param("presentMonth") int presentMonth);
 }
