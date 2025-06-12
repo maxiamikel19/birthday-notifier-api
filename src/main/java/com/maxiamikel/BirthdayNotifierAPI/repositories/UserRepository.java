@@ -13,7 +13,9 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM User u WHERE FUNCTION('MONTH', u.birthday) = :month AND FUNCTION('DAY', u.birthday) = :day")
+    // MYSQL @Query("SELECT u FROM User u WHERE FUNCTION('MONTH', u.birthday) =
+    // :month AND FUNCTION('DAY', u.birthday) = :day")
+    @Query("SELECT u FROM User u WHERE EXTRACT(MONTH FROM u.birthday) = :month AND EXTRACT(DAY FROM u.birthday) = :day")
     List<User> findByBirthdayToday(@Param("month") int month, @Param("day") int day);
 
     @Query("SELECT u FROM User u WHERE MONTH(u.birthday) = :presentMonth")
