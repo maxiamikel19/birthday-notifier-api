@@ -2,12 +2,12 @@ spring:
   application:
     name: BirthdayNotifierAPI
   datasource:
-    url: jdbc:postgresql://localhost:5432/birthdaydba
-    username: admin
-    password: 123456
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
-    database: MYSQL
+    database: POSTGRESQL
     hibernate:
       ddl-auto: update
     show-sql: true
