@@ -3,6 +3,7 @@ package com.maxiamikel.birthday_notifier_api.mapper;
 import org.springframework.stereotype.Component;
 
 import com.maxiamikel.birthday_notifier_api.dto.request.CreateUserRequest;
+import com.maxiamikel.birthday_notifier_api.dto.request.UpdateUserRequest;
 import com.maxiamikel.birthday_notifier_api.dto.response.UserResponse;
 import com.maxiamikel.birthday_notifier_api.entity.User;
 
@@ -34,6 +35,17 @@ public class UserMapper {
                 .birthDate(request.birthDate())
                 .affiliationDate(request.affiliationDate())
                 .build();
+    }
+
+    public void updateEntityFromRequest(UpdateUserRequest request, User user) {
+
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setEmail(request.email());
+        user.setPhoneNumber(request.phoneNumber());
+        user.setBirthDate(user.getBirthDate());
+        user.setAffiliationDate(user.getAffiliationDate());
+        user.setGender(user.getGender());
     }
 
 }
