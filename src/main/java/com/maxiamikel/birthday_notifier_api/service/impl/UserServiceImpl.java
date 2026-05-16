@@ -88,8 +88,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserResponse> findBirthdaysByMonth(int month, Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findBirthdaysByMonth'");
+            if (month < 1 || month > 12) {
+                throw new InputValidationException("Month must be between 1 and 12");
+            }
+
+        return userRepository.findUsersByBirthMonth(month, pageable).map(userMapper::toResponse);
     }
 
     private void validateEmailAvailability(String email) {
