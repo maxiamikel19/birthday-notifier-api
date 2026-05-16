@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: birthday-notifier-db
+    restart: on-failure
+
+    environment:
+      POSTGRES_DB: birthday_notifier_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev123
+    ports:
+      - "5432:5432"
+    networks:
+      - birthday-net
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+networks:
+  birthday-net:
+    driver: bridge
